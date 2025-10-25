@@ -1,0 +1,54 @@
+# Binaries
+*.exe
+*.dll
+*.so
+*.dylib
+/relay
+/mesh-api
+cmd/relay/relay
+cmd/mesh-api/mesh-api
+
+# Build artifacts
+*.out
+/bin/
+/build/
+
+# Database files
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+# Data directories
+/data/
+/mesh-data/
+/mesh-data-*/
+/storage-data/
+/test-data/
+/temp/
+/tmp/
+*.tmp
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+/logs/
+
+# Keys and secrets
+*.key
+*.pem
+!keys/*.pem.pub
+.env
+
+# Coverage
+*.cover
+coverage.out
+coverage.html
