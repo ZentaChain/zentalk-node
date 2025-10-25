@@ -21,10 +21,11 @@ cd "$SCRIPT_DIR"
 RELAY_PORT=9001
 API_PORT=3001
 MESH_API_PORT=8080
+FRONTEND_PORT=3000
 
 # Default addresses for relay (can be overridden)
-DEFAULT_OPERATOR="0xfe9472d0f49b424042fd66403840b5144f9f9999"
-DEFAULT_CONTRACT="0xAbCdEf1234567890AbCdEf1234567890AbCdEf12"
+DEFAULT_OPERATOR="0xfe9472d0f49b424042fd66403840b5144f9f9988"
+DEFAULT_CONTRACT="0xAbCdEf1234567890AbCdEf1234567890AbCdEf88"
 OPERATOR_WALLET="${1:-$DEFAULT_OPERATOR}"
 CONTRACT_ADDR="${2:-$DEFAULT_CONTRACT}"
 
@@ -49,7 +50,17 @@ echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━�
 echo ""
 
 # Step 1: Stop all running processes
-echo -e "${YELLOW}[1/6]${NC} Stopping all ZenTalk processes..."
+echo -e "${YELLOW}[1/7]${NC} Stopping all ZenTalk processes..."
+
+# Kill frontend (Next.js dev server)
+FRONTEND_PID=$(lsof -ti:$FRONTEND_PORT 2>/dev/null || true)
+if [ ! -z "$FRONTEND_PID" ]; then
+  echo -e "  ${CYAN}→${NC} Stopping frontend server (PID: $FRONTEND_PID)"
+  kill -9 $FRONTEND_PID 2>/dev/null || true
+  echo -e "  ${GREEN}✓${NC} Frontend server stopped"
+else
+  echo -e "  ${CYAN}→${NC} Frontend server not running"
+fi
 
 # Kill relay server
 RELAY_PID=$(lsof -ti:$RELAY_PORT 2>/dev/null || true)
@@ -85,7 +96,7 @@ sleep 1
 echo -e "${GREEN}✓${NC} All processes stopped"
 
 # Step 2: Clean databases
-echo -e "\n${YELLOW}[2/6]${NC} Cleaning databases..."
+echo -e "\n${YELLOW}[2/7]${NC} Cleaning databases..."
 
 DB_COUNT=0
 
@@ -143,7 +154,7 @@ fi
 echo -e "${GREEN}✓${NC} Deleted $DB_COUNT database files"
 
 # Step 3: Clean MeshStorage data
-echo -e "\n${YELLOW}[3/6]${NC} Cleaning MeshStorage data..."
+echo -e "\n${YELLOW}[3/7]${NC} Cleaning MeshStorage data..."
 
 MESH_COUNT=0
 
@@ -175,7 +186,7 @@ done
 echo -e "${GREEN}✓${NC} Cleaned $MESH_COUNT MeshStorage locations"
 
 # Step 4: Start Relay Server
-echo -e "\n${YELLOW}[4/6]${NC} Starting Relay Server..."
+echo -e "\n${YELLOW}[4/7]${NC} Starting Relay Server..."
 echo -e "  ${CYAN}→${NC} Operator wallet: $OPERATOR_WALLET"
 echo -e "  ${CYAN}→${NC} Contract address: $CONTRACT_ADDR"
 
@@ -209,7 +220,7 @@ else
 fi
 
 # Step 5: Start MeshStorage API
-echo -e "\n${YELLOW}[5/6]${NC} Starting MeshStorage API..."
+echo -e "\n${YELLOW}[5/7]${NC} Starting MeshStorage API..."
 
 # Start mesh-api in background
 nohup go run cmd/mesh-api/main.go > data/mesh-api.log 2>&1 &
@@ -228,7 +239,7 @@ else
 fi
 
 # Step 6: Start API Server (from zentalk-api folder)
-echo -e "\n${YELLOW}[6/6]${NC} Starting API Server..."
+echo -e "\n${YELLOW}[6/7]${NC} Starting API Server..."
 
 # Check if zentalk-api binary exists
 API_BINARY="../zentalk-api/api-server"
@@ -257,23 +268,61 @@ else
   API_NEW_PID="N/A"
 fi
 
+
+# Step 7: Start Frontend (Next.js dev server)
+echo -e "\n${YELLOW}[7/7]${NC} Starting Frontend Server..."
+
+# Check if frontend directory exists
+FRONTEND_DIR="../zentalk"
+if [ -d "$FRONTEND_DIR" ]; then
+  cd "$FRONTEND_DIR"
+
+  # Check if node_modules exists
+  if [ ! -d "node_modules" ]; then
+    echo -e "  ${YELLOW}⚠${NC} node_modules not found, installing dependencies..."
+    npm install > /dev/null 2>&1
+  fi
+
+  # Start Next.js dev server in background
+  nohup npm run dev > ../zentalk-node/data/frontend.log 2>&1 &
+  FRONTEND_NEW_PID=$!
+  cd - > /dev/null
+
+  sleep 3
+
+  # Verify frontend is running
+  if kill -0 $FRONTEND_NEW_PID 2>/dev/null; then
+    echo -e "${GREEN}✓${NC} Frontend server started (PID: $FRONTEND_NEW_PID, Port: $FRONTEND_PORT)"
+    echo -e "  ${CYAN}→${NC} Log: data/frontend.log"
+    echo -e "  ${CYAN}→${NC} URL: http://localhost:$FRONTEND_PORT"
+  else
+    echo -e "${RED}✗${NC} Failed to start frontend server"
+    echo -e "  ${CYAN}→${NC} Check data/frontend.log for errors"
+    FRONTEND_NEW_PID="N/A"
+  fi
+else
+  echo -e "${YELLOW}⚠${NC} Frontend directory not found at $FRONTEND_DIR"
+  echo -e "  ${CYAN}→${NC} Start manually: cd ../zentalk && npm run dev"
+  FRONTEND_NEW_PID="N/A"
+fi
 # Summary
 echo -e "\n${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo -e "${GREEN}✓ Clean restart completed successfully!${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
-echo -e "${RED}⚠️  IMPORTANT: Refresh All Browser Windows!${NC}"
+echo -e "${RED}⚠️  IMPORTANT: All services restarted!${NC}"
 echo -e "${YELLOW}   All databases have been wiped.${NC}"
-echo -e "${YELLOW}   Simply refresh (Cmd+R / Ctrl+R) all browser windows.${NC}"
-echo -e "${YELLOW}   The app will automatically detect the backend was wiped${NC}"
-echo -e "${YELLOW}   and clear localStorage, showing the registration modal.${NC}"
+echo -e "${YELLOW}   Frontend will open automatically at http://localhost:$FRONTEND_PORT${NC}"
+echo -e "${YELLOW}   You may need to refresh to clear localStorage.${NC}"
 echo ""
 echo -e "${CYAN}Running Services:${NC}"
+echo -e "  • Frontend:          http://localhost:$FRONTEND_PORT (PID: $FRONTEND_NEW_PID)"
 echo -e "  • Relay Server:      http://localhost:$RELAY_PORT (PID: $RELAY_NEW_PID)"
 echo -e "  • API Server:        http://localhost:$API_PORT (PID: $API_NEW_PID)"
 echo -e "  • MeshStorage API:   http://localhost:$MESH_API_PORT (PID: $MESH_NEW_PID)"
 echo ""
 echo -e "${CYAN}Logs:${NC}"
+echo -e "  • Frontend:    tail -f data/frontend.log"
 echo -e "  • Relay:       tail -f data/relay.log"
 echo -e "  • API:         tail -f ../zentalk-api/data/api-server.log"
 echo -e "  • MeshStorage: tail -f data/mesh-api.log"
