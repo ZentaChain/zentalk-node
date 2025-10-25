@@ -1,6 +1,6 @@
 # ZenTalk Node
 
-> Join the decentralized ZenTalk network and earn CHAIN rewards
+> Join the decentralized Zentalk network and earn $CHAIN rewards.
 
 [![Go Version](https://img.shields.io/badge/Go-1.21+-00ADD8?style=flat&logo=go)](https://go.dev/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
@@ -22,7 +22,7 @@
 
 ## Overview
 
-ZenTalk Node is a command-line tool that allows you to run relay and mesh storage nodes for the ZenTalk decentralized messaging network. By running a node, you contribute to the network's infrastructure and earn CHAIN token rewards.
+Zentalk-Node is a command-line tool that allows you to run relay and mesh storage nodes for the Zentalk decentralized messaging network. By running a node, you contribute to the network's infrastructure and earn CHAIN token rewards.
 
 ## Features
 
@@ -278,17 +278,10 @@ MIT License - see LICENSE file for details
 
 ## Links
 
-- [ZenTalk API](https://github.com/ZentaChain/zentalk-api) - Client API server
-- [ZenTalk Protocol](https://github.com/ZentaChain/zentalk-protocol) - Protocol specification
+- [Zentalk API](https://github.com/ZentaChain/zentalk-api) - Client API server
+- [Zentalk Protocol](https://github.com/ZentaChain/zentalk-protocol) - Protocol specification
 - [Website](https://zentachain.io)
 - [Block Explorer](https://explorer.zentachain.io)
-
-## Support
-
-- [Discord](https://discord.gg/zentachain)
-- [Telegram](https://t.me/ZentaChain)
-- [Email](mailto:info@zentachain.io)
-- [Documentation](https://docs.zentalk.chat)
 
 ---
 
