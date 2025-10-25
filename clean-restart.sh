@@ -217,23 +217,34 @@ else
   exit 1
 fi
 
-# Step 6: Start API Server
+# Step 6: Start API Server (from zentalk-api folder)
 echo -e "\n${YELLOW}[6/6]${NC} Starting API Server..."
 
-# Start api-server in background
-nohup go run cmd/api-server/main.go > data/api-server.log 2>&1 &
-API_NEW_PID=$!
+# Check if zentalk-api binary exists
+API_BINARY="../zentalk-api/api-server"
+if [ -f "$API_BINARY" ]; then
+  # Run the compiled binary
+  cd ../zentalk-api
+  nohup ./api-server > data/api-server.log 2>&1 &
+  API_NEW_PID=$!
+  cd - > /dev/null
 
-sleep 2
+  sleep 2
 
-# Verify api-server is running
-if kill -0 $API_NEW_PID 2>/dev/null; then
-  echo -e "${GREEN}✓${NC} API server started (PID: $API_NEW_PID, Port: $API_PORT)"
-  echo -e "  ${CYAN}→${NC} Log: data/api-server.log"
+  # Verify api-server is running
+  if kill -0 $API_NEW_PID 2>/dev/null; then
+    echo -e "${GREEN}✓${NC} API server started (PID: $API_NEW_PID, Port: $API_PORT)"
+    echo -e "  ${CYAN}→${NC} Log: ../zentalk-api/data/api-server.log"
+  else
+    echo -e "${RED}✗${NC} Failed to start API server"
+    echo -e "  ${CYAN}→${NC} Check ../zentalk-api/data/api-server.log for errors"
+    exit 1
+  fi
 else
-  echo -e "${RED}✗${NC} Failed to start API server"
-  echo -e "  ${CYAN}→${NC} Check data/api-server.log for errors"
-  exit 1
+  echo -e "${YELLOW}⚠${NC} API server binary not found at $API_BINARY"
+  echo -e "  ${CYAN}→${NC} Build it first: cd ../zentalk-api && go build -o api-server cmd/api-server/main.go"
+  echo -e "  ${CYAN}→${NC} Or start manually: cd ../zentalk-api && ./api-server"
+  API_NEW_PID="N/A"
 fi
 
 # Summary
@@ -253,8 +264,8 @@ echo -e "  • API Server:        http://localhost:$API_PORT (PID: $API_NEW_PID)
 echo -e "  • MeshStorage API:   http://localhost:$MESH_API_PORT (PID: $MESH_NEW_PID)"
 echo ""
 echo -e "${CYAN}Logs:${NC}"
-echo -e "  • Relay:      tail -f data/relay.log"
-echo -e "  • API:        tail -f data/api-server.log"
+echo -e "  • Relay:       tail -f data/relay.log"
+echo -e "  • API:         tail -f ../zentalk-api/data/api-server.log"
 echo -e "  • MeshStorage: tail -f data/mesh-api.log"
 echo ""
 echo -e "${CYAN}Useful Commands:${NC}"

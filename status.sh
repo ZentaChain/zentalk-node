@@ -80,13 +80,8 @@ echo ""
 
 # Databases
 echo -e "${CYAN}Databases:${NC}"
-if [ -f "data/zentalk.db" ]; then
-  DB_SIZE=$(du -h data/zentalk.db 2>/dev/null | cut -f1)
-  echo -e "  zentalk.db: ${GREEN}✓${NC} ($DB_SIZE)"
-else
-  echo -e "  zentalk.db: ${YELLOW}⚠ Not found${NC}"
-fi
 
+# Node databases
 if [ -f "data/relay-9001-queue.db" ]; then
   DB_SIZE=$(du -h data/relay-9001-queue.db 2>/dev/null | cut -f1)
   echo -e "  relay-9001-queue.db: ${GREEN}✓${NC} ($DB_SIZE)"
@@ -99,6 +94,14 @@ if [ -f "mesh-data-clean/chunks.db" ]; then
   echo -e "  mesh chunks.db: ${GREEN}✓${NC} ($DB_SIZE)"
 else
   echo -e "  mesh chunks.db: ${YELLOW}⚠ Not found${NC}"
+fi
+
+# API databases (in zentalk-api folder)
+if [ -f "../zentalk-api/data/messages.db" ]; then
+  DB_SIZE=$(du -h ../zentalk-api/data/messages.db 2>/dev/null | cut -f1)
+  echo -e "  messages.db (API): ${GREEN}✓${NC} ($DB_SIZE)"
+else
+  echo -e "  messages.db (API): ${YELLOW}⚠ Not found${NC}"
 fi
 echo ""
 

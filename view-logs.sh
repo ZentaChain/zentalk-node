@@ -24,17 +24,21 @@ echo ""
 
 # Check if logs exist
 LOGS_EXIST=0
+LOG_FILES=()
 
 if [ -f "data/relay.log" ]; then
   LOGS_EXIST=1
+  LOG_FILES+=("data/relay.log")
 fi
 
-if [ -f "data/api-server.log" ]; then
+if [ -f "../zentalk-api/data/api-server.log" ]; then
   LOGS_EXIST=1
+  LOG_FILES+=("../zentalk-api/data/api-server.log")
 fi
 
 if [ -f "data/mesh-api.log" ]; then
   LOGS_EXIST=1
+  LOG_FILES+=("data/mesh-api.log")
 fi
 
 if [ $LOGS_EXIST -eq 0 ]; then
@@ -45,11 +49,7 @@ if [ $LOGS_EXIST -eq 0 ]; then
 fi
 
 # Follow all logs with prefixes
-tail -f \
-  data/relay.log \
-  data/api-server.log \
-  data/mesh-api.log \
-  2>/dev/null | \
+tail -f "${LOG_FILES[@]}" 2>/dev/null | \
   while IFS= read -r line; do
     # Add colored prefixes based on log content
     if [[ "$line" == *"relay"* ]] || [[ "$line" == *"Relay"* ]]; then
