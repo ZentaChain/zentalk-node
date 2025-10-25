@@ -15,8 +15,8 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Test accounts
-CHAIN_WALLET="0xfe9472d0f49b424042fd66403840b5144f9f9999"
-MAIN_WALLET="0xefeaa8e5efdcb380bf8581944cd738f448b8a244"
+CHAIN_WALLET="0xfe9472d0f49b424042fd66403840b5144f9f9988"
+MAIN_WALLET="0xefeaa8e5efdcb380bf8581944cd738f448b8a288"
 
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo -e "${BLUE}  ZenTalk Messaging Test - Automated Flow${NC}"
