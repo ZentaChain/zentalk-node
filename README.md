@@ -1,4 +1,4 @@
-# ZenTalk Node
+# Zentalk Node
 
 > Join the decentralized Zentalk network and earn $CHAIN rewards.
 
