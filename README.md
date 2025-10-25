@@ -5,6 +5,19 @@
 [![Go Version](https://img.shields.io/badge/Go-1.21+-00ADD8?style=flat&logo=go)](https://go.dev/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
+## ⚠️ UNDER DEVELOPMENT - NOT FOR PRODUCTION
+
+**This project is currently under active development and is NOT ready for production use.**
+
+- ❌ Security audits not completed
+- ❌ Reward system not yet implemented
+- ❌ Network stability not guaranteed
+- ❌ May contain bugs and vulnerabilities
+
+**Use at your own risk. Do not run nodes with sensitive data or in production environments.**
+
+---
+
 ## Overview
 
 ZenTalk Node is a command-line tool that allows you to run relay and mesh storage nodes for the ZenTalk decentralized messaging network. By running a node, you contribute to the network's infrastructure and earn CHAIN token rewards.
