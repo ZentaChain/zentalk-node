@@ -5,6 +5,8 @@
 [![Go Version](https://img.shields.io/badge/Go-1.21+-00ADD8?style=flat&logo=go)](https://go.dev/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
+---
+
 ## ⚠️ UNDER DEVELOPMENT - NOT FOR PRODUCTION
 
 **This project is currently under active development and is NOT ready for production use.**
