@@ -198,6 +198,16 @@ else
   exit 1
 fi
 
+# Copy relay public key to API directory (required for message encryption)
+echo -e "  ${CYAN}→${NC} Copying relay public key to API directory..."
+mkdir -p ../zentalk-api/keys
+if [ -f "keys/relay.pem.pub" ]; then
+  cp keys/relay.pem.pub ../zentalk-api/keys/
+  echo -e "  ${GREEN}✓${NC} Relay public key copied to API"
+else
+  echo -e "  ${YELLOW}⚠${NC} Relay public key not found (will be generated on first use)"
+fi
+
 # Step 5: Start MeshStorage API
 echo -e "\n${YELLOW}[5/6]${NC} Starting MeshStorage API..."
 
