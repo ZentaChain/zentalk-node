@@ -7,9 +7,9 @@ import (
 	"log"
 	"time"
 
-	"github.com/zentalk/protocol/pkg/crypto"
-	"github.com/zentalk/protocol/pkg/protocol"
-	"github.com/zentalk/protocol/pkg/storage"
+	"github.com/ZentaChain/zentalk-node/pkg/crypto"
+	"github.com/ZentaChain/zentalk-node/pkg/protocol"
+	"github.com/ZentaChain/zentalk-node/pkg/storage"
 )
 
 // SendTypingIndicator sends a typing status notification

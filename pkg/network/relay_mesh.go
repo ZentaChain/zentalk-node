@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/zentalk/protocol/pkg/protocol"
+	"github.com/ZentaChain/zentalk-node/pkg/protocol"
 )
 
 // BootstrapRelay represents a hardcoded bootstrap relay for initial mesh connectivity

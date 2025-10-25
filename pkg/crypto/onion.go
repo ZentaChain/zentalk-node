@@ -9,7 +9,7 @@ import (
 	"errors"
 	"io"
 
-	"github.com/zentalk/protocol/pkg/protocol"
+	"github.com/ZentaChain/zentalk-node/pkg/protocol"
 )
 
 var (

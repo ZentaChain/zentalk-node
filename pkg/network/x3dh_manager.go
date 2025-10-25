@@ -6,7 +6,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/zentalk/protocol/pkg/protocol"
+	"github.com/ZentaChain/zentalk-node/pkg/protocol"
 )
 
 // InitializeX3DH initializes X3DH identity and prekeys for forward secrecy

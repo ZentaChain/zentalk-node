@@ -11,7 +11,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/zentalk/protocol/pkg/meshstorage"
+	"github.com/ZentaChain/zentalk-node/pkg/meshstorage"
 )
 
 // TestAPIUploadDownload tests the complete upload/download flow

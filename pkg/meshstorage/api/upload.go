@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/zentalk/protocol/pkg/meshstorage"
+	"github.com/ZentaChain/zentalk-node/pkg/meshstorage"
 )
 
 // UploadRequest represents a storage upload request

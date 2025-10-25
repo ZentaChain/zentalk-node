@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/zentalk/protocol/pkg/meshstorage"
+	"github.com/ZentaChain/zentalk-node/pkg/meshstorage"
 )
 
 // Server represents the HTTP API server for mesh storage

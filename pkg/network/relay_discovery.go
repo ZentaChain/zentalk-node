@@ -9,9 +9,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/zentalk/protocol/pkg/crypto"
-	"github.com/zentalk/protocol/pkg/dht"
-	"github.com/zentalk/protocol/pkg/protocol"
+	"github.com/ZentaChain/zentalk-node/pkg/crypto"
+	"github.com/ZentaChain/zentalk-node/pkg/dht"
+	"github.com/ZentaChain/zentalk-node/pkg/protocol"
 )
 
 // RelayDiscovery manages relay discovery via DHT

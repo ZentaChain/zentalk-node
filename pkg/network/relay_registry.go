@@ -8,7 +8,7 @@ import (
 	"os"
 	"sync"
 
-	"github.com/zentalk/protocol/pkg/crypto"
+	"github.com/ZentaChain/zentalk-node/pkg/crypto"
 )
 
 // RelayRegistry manages available relays

@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/zentalk/protocol/pkg/protocol"
+	"github.com/ZentaChain/zentalk-node/pkg/protocol"
 )
 
 // AESEncryptGCM encrypts plaintext using AES-256-GCM

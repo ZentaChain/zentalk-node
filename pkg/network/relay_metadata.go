@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/zentalk/protocol/pkg/protocol"
+	"github.com/ZentaChain/zentalk-node/pkg/protocol"
 )
 
 // RelayMetadata contains information about a relay server

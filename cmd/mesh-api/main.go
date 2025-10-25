@@ -10,8 +10,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/zentalk/protocol/pkg/meshstorage"
-	"github.com/zentalk/protocol/pkg/meshstorage/api"
+	"github.com/ZentaChain/zentalk-node/pkg/meshstorage"
+	"github.com/ZentaChain/zentalk-node/pkg/meshstorage/api"
 )
 
 func main() {

@@ -10,9 +10,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/zentalk/protocol/pkg/crypto"
-	"github.com/zentalk/protocol/pkg/network"
-	"github.com/zentalk/protocol/pkg/storage"
+	"github.com/ZentaChain/zentalk-node/pkg/crypto"
+	"github.com/ZentaChain/zentalk-node/pkg/network"
+	"github.com/ZentaChain/zentalk-node/pkg/storage"
 )
 
 const (

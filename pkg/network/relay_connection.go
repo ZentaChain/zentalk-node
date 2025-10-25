@@ -5,7 +5,7 @@ import (
 	"log"
 	"net"
 
-	"github.com/zentalk/protocol/pkg/protocol"
+	"github.com/ZentaChain/zentalk-node/pkg/protocol"
 )
 
 // acceptLoop accepts incoming connections

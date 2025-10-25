@@ -6,8 +6,8 @@ import (
 	"net"
 	"time"
 
-	"github.com/zentalk/protocol/pkg/crypto"
-	"github.com/zentalk/protocol/pkg/protocol"
+	"github.com/ZentaChain/zentalk-node/pkg/crypto"
+	"github.com/ZentaChain/zentalk-node/pkg/protocol"
 )
 
 // handleHandshake handles connection handshake and returns the peer address

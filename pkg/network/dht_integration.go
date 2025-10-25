@@ -6,8 +6,8 @@ import (
 	"log"
 	"time"
 
-	"github.com/zentalk/protocol/pkg/dht"
-	"github.com/zentalk/protocol/pkg/protocol"
+	"github.com/ZentaChain/zentalk-node/pkg/dht"
+	"github.com/ZentaChain/zentalk-node/pkg/protocol"
 )
 
 // AttachDHT attaches a DHT node for decentralized key bundle discovery
