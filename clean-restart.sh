@@ -134,10 +134,10 @@ if [ -f "data/relay-9001-queue.db-wal" ]; then
   ((DB_COUNT++))
 fi
 
-# Messages database (if exists)
+# Messages database in zentalk-node (if exists)
 if [ -f "data/messages.db" ]; then
   rm -f data/messages.db
-  echo -e "  ${CYAN}→${NC} Deleted messages.db"
+  echo -e "  ${CYAN}→${NC} Deleted zentalk-node/data/messages.db"
   ((DB_COUNT++))
 fi
 
@@ -148,6 +148,23 @@ fi
 
 if [ -f "data/messages.db-wal" ]; then
   rm -f data/messages.db-wal
+  ((DB_COUNT++))
+fi
+
+# API database in zentalk-api (CRITICAL - this is where user accounts are stored!)
+if [ -f "../zentalk-api/data/messages.db" ]; then
+  rm -f ../zentalk-api/data/messages.db
+  echo -e "  ${CYAN}→${NC} Deleted zentalk-api/data/messages.db (user accounts)"
+  ((DB_COUNT++))
+fi
+
+if [ -f "../zentalk-api/data/messages.db-shm" ]; then
+  rm -f ../zentalk-api/data/messages.db-shm
+  ((DB_COUNT++))
+fi
+
+if [ -f "../zentalk-api/data/messages.db-wal" ]; then
+  rm -f ../zentalk-api/data/messages.db-wal
   ((DB_COUNT++))
 fi
 
@@ -310,10 +327,19 @@ echo -e "\n${BLUE}━━━━━━━━━━━━━━━━━━━━�
 echo -e "${GREEN}✓ Clean restart completed successfully!${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
-echo -e "${RED}⚠️  IMPORTANT: All services restarted!${NC}"
-echo -e "${YELLOW}   All databases have been wiped.${NC}"
-echo -e "${YELLOW}   Frontend will open automatically at http://localhost:$FRONTEND_PORT${NC}"
-echo -e "${YELLOW}   You may need to refresh to clear localStorage.${NC}"
+echo -e "${RED}⚠️  IMPORTANT: All databases have been wiped!${NC}"
+echo -e "${YELLOW}   All user data, messages, and sessions deleted.${NC}"
+echo ""
+echo -e "${CYAN}📋 NEXT STEPS TO START FRESH:${NC}"
+echo -e "${YELLOW}   1. Open browser: http://localhost:$FRONTEND_PORT${NC}"
+echo -e "${YELLOW}   2. Hard refresh the page (Ctrl+Shift+R / Cmd+Shift+R)${NC}"
+echo -e "${YELLOW}   3. The app should automatically detect wiped backend${NC}"
+echo -e "${YELLOW}   4. Registration modal will open for new user setup${NC}"
+echo ""
+echo -e "${CYAN}📝 If registration modal doesn't appear:${NC}"
+echo -e "${YELLOW}   • Open DevTools Console (F12)${NC}"
+echo -e "${YELLOW}   • Run: localStorage.clear()${NC}"
+echo -e "${YELLOW}   • Refresh page and reconnect wallet${NC}"
 echo ""
 echo -e "${CYAN}Running Services:${NC}"
 echo -e "  • Frontend:          http://localhost:$FRONTEND_PORT (PID: $FRONTEND_NEW_PID)"
