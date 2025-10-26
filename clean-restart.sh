@@ -255,34 +255,37 @@ else
   exit 1
 fi
 
-# Step 6: Start API Server (from zentalk-api folder)
-echo -e "\n${YELLOW}[6/7]${NC} Starting API Server..."
+# Step 6: Rebuild and Start API Server (from zentalk-api folder)
+echo -e "\n${YELLOW}[6/7]${NC} Rebuilding and Starting API Server..."
 
-# Check if zentalk-api binary exists
-API_BINARY="../zentalk-api/api-server"
-if [ -f "$API_BINARY" ]; then
-  # Run the compiled binary
-  cd ../zentalk-api
-  nohup ./api-server > data/api-server.log 2>&1 &
-  API_NEW_PID=$!
-  cd - > /dev/null
-
-  sleep 2
-
-  # Verify api-server is running
-  if kill -0 $API_NEW_PID 2>/dev/null; then
-    echo -e "${GREEN}✓${NC} API server started (PID: $API_NEW_PID, Port: $API_PORT)"
-    echo -e "  ${CYAN}→${NC} Log: ../zentalk-api/data/api-server.log"
-  else
-    echo -e "${RED}✗${NC} Failed to start API server"
-    echo -e "  ${CYAN}→${NC} Check ../zentalk-api/data/api-server.log for errors"
-    exit 1
-  fi
+# Always rebuild the API server to ensure latest code
+cd ../zentalk-api
+echo -e "  ${CYAN}→${NC} Building API server from source..."
+if go build -o api-server cmd/api-server/main.go 2>&1; then
+  echo -e "  ${GREEN}✓${NC} API server built successfully"
 else
-  echo -e "${YELLOW}⚠${NC} API server binary not found at $API_BINARY"
-  echo -e "  ${CYAN}→${NC} Build it first: cd ../zentalk-api && go build -o api-server cmd/api-server/main.go"
-  echo -e "  ${CYAN}→${NC} Or start manually: cd ../zentalk-api && ./api-server"
-  API_NEW_PID="N/A"
+  echo -e "${RED}✗${NC} Failed to build API server"
+  echo -e "  ${CYAN}→${NC} Check Go installation and dependencies"
+  cd - > /dev/null
+  exit 1
+fi
+
+# Start the API server
+echo -e "  ${CYAN}→${NC} Starting API server..."
+nohup ./api-server > data/api-server.log 2>&1 &
+API_NEW_PID=$!
+cd - > /dev/null
+
+sleep 2
+
+# Verify api-server is running
+if kill -0 $API_NEW_PID 2>/dev/null; then
+  echo -e "${GREEN}✓${NC} API server started (PID: $API_NEW_PID, Port: $API_PORT)"
+  echo -e "  ${CYAN}→${NC} Log: ../zentalk-api/data/api-server.log"
+else
+  echo -e "${RED}✗${NC} Failed to start API server"
+  echo -e "  ${CYAN}→${NC} Check ../zentalk-api/data/api-server.log for errors"
+  exit 1
 fi
 
 
