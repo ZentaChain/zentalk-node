@@ -41,6 +41,9 @@ type Client struct {
 	// Relay discovery
 	relayDiscovery *RelayDiscovery
 
+	// Guard relays (persistent entry nodes for privacy)
+	guardRelayManager *GuardRelayManager
+
 	// X3DH & Double Ratchet (Forward Secrecy)
 	x3dhIdentity   *protocol.IdentityKeyPair                   // Our X3DH identity
 	signedPreKey   *protocol.SignedPreKeyPrivate               // Our current signed prekey

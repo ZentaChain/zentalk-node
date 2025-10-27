@@ -19,6 +19,16 @@ func (rs *RelayServer) handleHandshake(conn net.Conn, header *protocol.Header) p
 		return protocol.Address{}
 	}
 
+	// Remove padding if present (traffic analysis resistance)
+	msg := &protocol.Message{Header: header, Payload: payload}
+	unpadded, err := protocol.RemoveMessagePadding(msg)
+	if err != nil {
+		log.Printf("⚠️  Failed to remove padding: %v", err)
+		// Continue with original payload (might not be padded)
+	} else {
+		payload = unpadded.Payload
+	}
+
 	// Decode handshake
 	var hs protocol.HandshakeMessage
 	if err := hs.Decode(payload); err != nil {

@@ -32,7 +32,7 @@ func (n *Node) Ping(target *Contact) error {
 	return nil
 }
 
-// Store stores a key-value pair in the DHT
+// Store stores a key-value pair in the DHT with authentication
 // Performs iterative node lookup to find k closest nodes, then stores on all of them
 func (n *Node) Store(key NodeID, value []byte, ttl time.Duration) error {
 	log.Printf("Storing key %s in DHT...", key.String()[:8])
@@ -46,11 +46,23 @@ func (n *Node) Store(key NodeID, value []byte, ttl time.Duration) error {
 
 	log.Printf("Found %d closest nodes for key %s", len(closestNodes), key.String()[:8])
 
+	// Create signed entry for authentication (prevents DHT poisoning)
+	signedEntry, err := SignEntry(key, value, n.PrivateKey, ttl)
+	if err != nil {
+		return fmt.Errorf("failed to sign entry: %w", err)
+	}
+
+	// Encode signed entry
+	signedData, err := signedEntry.Encode()
+	if err != nil {
+		return fmt.Errorf("failed to encode signed entry: %w", err)
+	}
+
 	// Store on all closest nodes
 	sender := NewContact(n.ID, n.Address)
 	req := &StoreRequest{
 		Key:   key,
-		Value: value,
+		Value: signedData, // Now storing signed entry instead of raw value
 		TTL:   int64(ttl.Seconds()),
 	}
 
@@ -73,7 +85,7 @@ func (n *Node) Store(key NodeID, value []byte, ttl time.Duration) error {
 		}
 	}
 
-	log.Printf("Successfully stored key %s on %d/%d nodes", key.String()[:8], successCount, len(closestNodes))
+	log.Printf("✅ Successfully stored signed key %s on %d/%d nodes", key.String()[:8], successCount, len(closestNodes))
 
 	if successCount == 0 {
 		return fmt.Errorf("failed to store on any node")
@@ -82,18 +94,40 @@ func (n *Node) Store(key NodeID, value []byte, ttl time.Duration) error {
 	return nil
 }
 
-// Lookup performs iterative value lookup in the DHT
+// Lookup performs iterative value lookup in the DHT with signature verification
 func (n *Node) Lookup(key NodeID) ([]byte, bool) {
 	log.Printf("Looking up key %s in DHT...", key.String()[:8])
 
 	// Check local storage first
-	if value, found := n.storage.Get(key); found {
+	if signedData, found := n.storage.Get(key); found {
 		log.Printf("Found key %s in local storage", key.String()[:8])
+
+		// Verify signature and extract value
+		value, err := VerifyAndExtract(signedData)
+		if err != nil {
+			log.Printf("⚠️  Signature verification failed for key %s: %v", key.String()[:8], err)
+			// Remove invalid entry
+			n.storage.Delete(key)
+			return nil, false
+		}
+
 		return value, true
 	}
 
 	// Perform iterative lookup
-	return n.iterativeFindValue(key)
+	signedData, found := n.iterativeFindValue(key)
+	if !found {
+		return nil, false
+	}
+
+	// Verify signature and extract value
+	value, err := VerifyAndExtract(signedData)
+	if err != nil {
+		log.Printf("⚠️  Signature verification failed for key %s: %v", key.String()[:8], err)
+		return nil, false
+	}
+
+	return value, true
 }
 
 // iterativeFindNode performs iterative node lookup (core Kademlia algorithm)

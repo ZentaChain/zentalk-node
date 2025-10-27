@@ -64,6 +64,7 @@ const (
 	FlagFragmented  uint16 = 0x0004 // Message is fragmented
 	FlagUrgent      uint16 = 0x0008 // High priority message
 	FlagRequiresAck uint16 = 0x0010 // Requires acknowledgment
+	FlagPadded      uint16 = 0x0020 // Message has padding (for traffic analysis resistance)
 )
 
 // Content types

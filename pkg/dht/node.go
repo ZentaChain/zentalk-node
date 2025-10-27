@@ -1,6 +1,7 @@
 package dht
 
 import (
+	"crypto/ed25519"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -19,6 +20,10 @@ type Node struct {
 	running      bool
 	mu           sync.RWMutex
 
+	// Ed25519 keys for signing DHT entries (security enhancement)
+	PrivateKey ed25519.PrivateKey
+	PublicKey  ed25519.PublicKey
+
 	// Pending RPC requests
 	pendingRequests map[string]chan *RPCMessage
 	pendingMu       sync.RWMutex
@@ -26,12 +31,20 @@ type Node struct {
 
 // NewNode creates a new DHT node
 func NewNode(id NodeID, address string) *Node {
+	// Generate Ed25519 key pair for signing DHT entries
+	publicKey, privateKey, err := ed25519.GenerateKey(nil)
+	if err != nil {
+		log.Printf("⚠️  Failed to generate Ed25519 keys: %v (signing disabled)", err)
+	}
+
 	return &Node{
 		ID:              id,
 		Address:         address,
 		routingTable:    NewRoutingTable(id),
 		storage:         NewStorage(),
 		pendingRequests: make(map[string]chan *RPCMessage),
+		PrivateKey:      privateKey,
+		PublicKey:       publicKey,
 	}
 }
 
@@ -150,7 +163,7 @@ func (n *Node) handlePing(msg *RPCMessage, sender *Contact) *RPCMessage {
 	return rpcMsg
 }
 
-// handleStore handles a STORE request
+// handleStore handles a STORE request with signature verification
 func (n *Node) handleStore(msg *RPCMessage, sender *Contact) *RPCMessage {
 	var req StoreRequest
 	if err := ParsePayload(msg, &req); err != nil {
@@ -158,11 +171,24 @@ func (n *Node) handleStore(msg *RPCMessage, sender *Contact) *RPCMessage {
 		return nil
 	}
 
-	// Store the value
+	// Verify signature before storing (prevents DHT poisoning attacks)
+	_, err := VerifyAndExtract(req.Value)
+	if err != nil {
+		log.Printf("⚠️  Rejected unsigned/invalid STORE from %s: %v", sender.ID.String()[:8], err)
+		response := &StoreAckResponse{
+			Success: false,
+			Message: "signature verification failed",
+		}
+		rpcMsg, _ := NewRPCMessage(RPCStoreAck, sender, response)
+		rpcMsg.RequestID = msg.RequestID
+		return rpcMsg
+	}
+
+	// Store the signed value
 	ttl := time.Duration(req.TTL) * time.Second
 	n.storage.Store(req.Key, req.Value, ttl, msg.Sender.ID)
 
-	log.Printf("Stored key %s (TTL: %v)", req.Key.String()[:8], ttl)
+	log.Printf("✅ Stored verified key %s (TTL: %v)", req.Key.String()[:8], ttl)
 
 	// Send acknowledgment
 	response := &StoreAckResponse{Success: true}

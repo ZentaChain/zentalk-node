@@ -17,9 +17,16 @@ type QueuedMessage struct {
 	RecipientAddr   string // Hex-encoded address
 	MessageID       string // Unique message identifier
 	EncryptedPayload []byte // Full encrypted onion-routed message
-	Timestamp       int64  // When message was queued
+	Timestamp       int64  // When message was queued (bucketed to 1-hour intervals for privacy)
 	ExpiresAt       int64  // When message expires (TTL)
 	Attempts        int    // Delivery attempt count
+}
+
+// bucketTimestamp rounds a timestamp to the nearest hour (privacy protection)
+// This prevents relay operators from determining exact online/offline patterns
+func bucketTimestamp(timestamp int64) int64 {
+	const oneHour = 3600 // seconds
+	return (timestamp / oneHour) * oneHour
 }
 
 // RelayMessageQueue manages offline message storage for a relay
@@ -96,6 +103,9 @@ func (q *RelayMessageQueue) QueueMessage(recipientAddr protocol.Address, message
 	recipientHex := hex.EncodeToString(recipientAddr[:])
 	messageIDHex := hex.EncodeToString(messageID[:])
 	now := time.Now().Unix()
+
+	// Bucket timestamp to nearest hour for privacy (prevents precise online/offline tracking)
+	bucketedTimestamp := bucketTimestamp(now)
 	expiresAt := now + int64(q.ttl.Seconds())
 
 	query := `
@@ -103,7 +113,7 @@ func (q *RelayMessageQueue) QueueMessage(recipientAddr protocol.Address, message
 		VALUES (?, ?, ?, ?, ?)
 	`
 
-	_, err := q.db.Exec(query, recipientHex, messageIDHex, encryptedPayload, now, expiresAt)
+	_, err := q.db.Exec(query, recipientHex, messageIDHex, encryptedPayload, bucketedTimestamp, expiresAt)
 	if err != nil {
 		return fmt.Errorf("failed to queue message: %v", err)
 	}
