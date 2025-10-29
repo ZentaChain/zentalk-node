@@ -176,7 +176,7 @@ echo -e "\n${YELLOW}[3/7]${NC} Cleaning MeshStorage data..."
 MESH_COUNT=0
 
 # Clean all mesh storage directories
-for DIR in mesh-data-clean cmd/mesh-api/test-data cmd/mesh-api/test-data-encrypted; do
+for DIR in mesh-data cmd/mesh-api/test-data cmd/mesh-api/test-data-encrypted; do
   if [ -d "$DIR" ]; then
     # Delete chunks.db
     if [ -f "$DIR/chunks.db" ]; then
